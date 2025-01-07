@@ -1,0 +1,92 @@
+---
+#- name: "REDHAT | Install extra repositories"
+#  when: 
+#    - textfile_exporters_install_epel_repo is defined and textfile_exporters_install_epel_repo|bool
+#    - ansible_distribution in ["Rocky", "RedHat"]
+#  block:
+#    - name: "Check if EPEL repo is already configured"
+#      ansible.builtin.stat:
+#        path: "/etc/yum.repos.d/epel.repo"
+#      register: epel_repo
+#
+#    - name: "REDHAT | Import EPEL GPG key."
+#      ansible.builtin.rpm_key:
+#        key: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}"
+#        state: present
+#      when: not epel_repo.stat.exists
+#
+#    - name: "REDHAT | Installing epel-release"
+#      ansible.builtin.yum:
+#        name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm"
+#        state: present
+#      register: pkg_result
+#      retries: 12
+#      delay: 10
+#      until: pkg_result is success
+#      when: not epel_repo.stat.exists
+#
+#    - name: "OracleLinux | Installing oracle-epel-release-el7"
+#      ansible.builtin.yum:
+#        name: "oracle-epel-release-el7"
+#        state: present
+#      register: pkg_result
+#      retries: 12
+#      delay: 10
+#      until: pkg_result is success
+#      when: ansible_distribution == "OracleLinux" and ansible_distribution_major_version == "7"
+
+- name: "ROCKY | Enable crb repository"
+  ansible.builtin.dnf:
+    name: perl-IPC-Run
+    enablerepo: crb
+    state: present
+  when: 
+    - ansible_distribution == "Rocky" and ansible_distribution_major_version >= "8"
+    - textfile_exporters_install_requirements
+
+- name: "ORACLELINUX | Enable codeready-builder repository"
+  ansible.builtin.dnf:
+    name: perl-IPC-Run
+    enablerepo: ol9_codeready_builder
+    state: present
+  when: 
+    - ansible_distribution == "OracleLinux" and ansible_distribution_major_version == "9"
+    - textfile_exporters_install_requirements
+
+- name: "Install requirements"
+  ansible.builtin.package:
+    name: "{{ __textfile_exporters_requirements }}"
+    state: present
+  register: pkg_result
+  retries: 12
+  delay: 10
+  until: pkg_result is success
+  when: textfile_exporters_install_requirements
+
+- name: "Create textfile scripts directory"
+  ansible.builtin.file:
+    path: "{{ textfile_exporters_install }}"
+    state: directory
+    mode: '0755'
+
+- name: "Deploy scripts tasks"
+  ansible.builtin.include_tasks: deploy_scripts.yml
+  with_items:
+    - "{{ textfile_exporters_urls }}"
+
+- name: "Install cron jobs"
+  ansible.builtin.cron:
+    cron_file: "{{ item.cron_file | d(omit) }}"
+    day: "{{ item.day | d(omit) }}"
+    hour: "{{ item.hour | d(omit) }}"
+    job: "{{ item.job }}"
+    minute: "{{ item.minute | d(omit) }}"
+    month: "{{ item.month | d(omit) }}"
+    name: "{{ item.name }}"
+    special_time: "{{ item.special_time | d(omit) }}"
+    state: present
+    user: "{{ item.user | d(omit) }}"
+    weekday: "{{ item.weekday | d(omit) }}"
+  loop: "{{ textfile_exporter_cron }}"
+  loop_control:
+    label: "{{ item.name }}"

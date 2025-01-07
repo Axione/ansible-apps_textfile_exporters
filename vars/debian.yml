@@ -1,0 +1,3 @@
+__textfile_exporters_requirements: 
+  - cron
+  - moreutils

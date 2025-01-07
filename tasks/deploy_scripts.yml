@@ -1,0 +1,32 @@
+---
+- name: "Set temp dir name"
+  ansible.builtin.set_fact:
+    _textfile_exporters_temp_dir: "{{ item.split('/')[-1] }}"
+
+- name: "Check for temp dir"
+  ansible.builtin.stat:
+    path: '/tmp/{{ _textfile_exporters_temp_dir }}'
+  changed_when: false
+  register: exporters_tempdir
+
+- name: "Download textfile exporter scripts localy"
+  ansible.builtin.git:
+    repo: "{{ item }}"
+    dest: "/tmp/{{ _textfile_exporters_temp_dir }}"
+  delegate_to: localhost
+
+- name: "Copy local scripts remotely"
+  ansible.builtin.copy:
+    src: '{{ copy }}'
+    dest: "{{ textfile_exporters_install }}"
+    mode: '0755'
+  with_fileglob:
+    - "/tmp/{{ _textfile_exporters_temp_dir }}/*"
+  loop_control:
+    loop_var: copy
+
+#- name: "Delete local temporary textfile exporter scripts folder"
+#  ansible.builtin.file:
+#    state: absent
+#    path: "/tmp/textfile_exporters"
+#  delegate_to: localhost
