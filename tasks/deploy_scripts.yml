@@ -14,6 +14,7 @@
     repo: "{{ item }}"
     dest: "/tmp/{{ _textfile_exporters_temp_dir }}"
   delegate_to: localhost
+  when: not exporters_tempdir.stat.exists
 
 - name: "Copy local scripts remotely"
   ansible.builtin.copy:
@@ -24,9 +25,3 @@
     - "/tmp/{{ _textfile_exporters_temp_dir }}/*"
   loop_control:
     loop_var: copy
-
-#- name: "Delete local temporary textfile exporter scripts folder"
-#  ansible.builtin.file:
-#    state: absent
-#    path: "/tmp/textfile_exporters"
-#  delegate_to: localhost
