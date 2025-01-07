@@ -7,6 +7,7 @@
   ansible.builtin.stat:
     path: '/tmp/{{ _textfile_exporters_temp_dir }}'
   changed_when: false
+  delegate_to: localhost
   register: exporters_tempdir
 
 - name: "Download textfile exporter scripts localy"
@@ -17,7 +18,6 @@
   retries: 12
   delay: 10
   until: git_result is success
-
   delegate_to: localhost
   when: not exporters_tempdir.stat.exists
 
