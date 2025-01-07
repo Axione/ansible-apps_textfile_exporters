@@ -13,6 +13,11 @@
   ansible.builtin.git:
     repo: "{{ item }}"
     dest: "/tmp/{{ _textfile_exporters_temp_dir }}"
+  register: git_result
+  retries: 12
+  delay: 10
+  until: git_result is success
+
   delegate_to: localhost
   when: not exporters_tempdir.stat.exists
 
