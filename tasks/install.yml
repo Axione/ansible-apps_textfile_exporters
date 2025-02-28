@@ -4,7 +4,7 @@
     name: perl-IPC-Run
     enablerepo: crb
     state: present
-  when: 
+  when:
     - ansible_distribution == "Rocky" and ansible_distribution_major_version >= "8"
     - textfile_exporters_install_requirements
 
@@ -13,7 +13,7 @@
     name: perl-IPC-Run
     enablerepo: ol9_codeready_builder
     state: present
-  when: 
+  when:
     - ansible_distribution == "OracleLinux" and ansible_distribution_major_version == "9"
     - textfile_exporters_install_requirements
 
@@ -31,7 +31,7 @@
   ansible.builtin.file:
     path: "{{ textfile_exporters_install }}"
     state: directory
-    mode: '0755'
+    mode: "0755"
 
 - name: "Deploy scripts tasks"
   ansible.builtin.include_tasks: deploy_scripts.yml
