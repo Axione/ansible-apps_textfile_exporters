@@ -8,13 +8,33 @@
     - ansible_distribution == "Rocky" and ansible_distribution_major_version >= "8"
     - textfile_exporters_install_requirements
 
-- name: "ORACLELINUX | Enable codeready-builder repository"
+- name: "ORACLELINUX9 | Enable codeready-builder repository"
   ansible.builtin.dnf:
     name: perl-IPC-Run
     enablerepo: ol9_codeready_builder
     state: present
   when:
     - ansible_distribution == "OracleLinux" and ansible_distribution_major_version == "9"
+    - textfile_exporters_install_requirements
+
+- name: "ORACLELINUX8 | Enable epel gpg key"
+  ansible.builtin.rpm_key:
+    state: present
+    key: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8"
+  when:
+    - ansible_distribution == "OracleLinux" and ansible_distribution_major_version == "8"
+    - textfile_exporters_install_requirements
+
+- name: "ORACLELINUX8 | Enable codeready-builder repository"
+  ansible.builtin.dnf:
+    name:
+      - https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+      - perl-IPC-Run
+      - moreutils
+    state: present
+    enablerepo: "ol8_codeready_builder,ol8_developer_EPEL"
+  when:
+    - ansible_distribution == "OracleLinux" and ansible_distribution_major_version == "8"
     - textfile_exporters_install_requirements
 
 - name: "Install requirements"
