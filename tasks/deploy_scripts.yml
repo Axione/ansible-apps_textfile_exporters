@@ -5,7 +5,7 @@
 
 - name: "Check for temp dir"
   ansible.builtin.stat:
-    path: '/tmp/{{ _textfile_exporters_temp_dir }}'
+    path: "/tmp/{{ _textfile_exporters_temp_dir }}"
   changed_when: false
   delegate_to: localhost
   register: exporters_tempdir
@@ -23,10 +23,11 @@
 
 - name: "Copy local scripts remotely"
   ansible.builtin.copy:
-    src: '{{ copy }}'
-    dest: "{{ textfile_exporters_install }}"
-    mode: '0755'
-  with_fileglob:
-    - "/tmp/{{ _textfile_exporters_temp_dir }}/*"
+    src: "{{ copy }}"
+    dest: "{{ textfile_exporters_install }}/{{ copy | basename }}"
+    mode: "0755"
+    remote_src: false
+  loop: "{{ query('fileglob', '/tmp/' + _textfile_exporters_temp_dir + '/*') }}"
   loop_control:
     loop_var: copy
+  when: item is not none
