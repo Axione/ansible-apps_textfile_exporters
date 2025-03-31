@@ -1,11 +1,22 @@
 ---
 textfile_exporters_install_requirements: true
 
-textfile_exporters_urls:
-  - "https://github.com/prometheus-community/node-exporter-textfile-collector-scripts.git"
-  - "https://github.com/lotusnoir/prometheus-textfile_exporters.git"
+textfile_exporters_urls: []
+#  - "https://github.com/prometheus-community/node-exporter-textfile-collector-scripts.git"
+#  - "https://github.com/lotusnoir/prometheus-textfile_exporters.git"
 
 textfile_exporters_install: "/opt/prometheus_textfile_exporters"
+
+textfile_exporters_content: []
+#  - name: "{{ textfile_exporters_install }}/vsphere_vm_attributes.sh"
+#    after: "#!/bin/bash"
+#    content: |
+#      VSPHERE_URL="https://vcenter.xxxx.xxx"
+#      VSPHERE_USER="xxxxxxxxxxx"
+#      VSPHERE_PWD="xxxxxxxxxxx"
+#      VSPHERE_TEMPFILE_COOKIE="/tmp/cookie"
+#      METRIC_NAME="vsphere_vm_attributes"
+#      OUTPUT_FILE="/var/lib/node_exporter/vsphere_vm_attributes.prom"
 
 textfile_exporter_cron: []
 # - name: "Check if sssd is properly working every 5min"

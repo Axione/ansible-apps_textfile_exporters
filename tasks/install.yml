@@ -58,6 +58,16 @@
   with_items:
     - "{{ textfile_exporters_urls }}"
 
+- name: "Add custom lines in script"
+  ansible.builtin.blockinfile:
+    path: "{{ item.name }}"
+    marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    insertafter: "{{ item.after }}"
+    block: |
+      {{ item.content }}
+  loop: "{{ textfile_exporters_content | default([]) }}"
+  when: textfile_exporters_content is defined and textfile_exporters_content | length > 0
+
 - name: "Install cron jobs"
   ansible.builtin.cron:
     cron_file: "{{ item.cron_file | d(omit) }}"
