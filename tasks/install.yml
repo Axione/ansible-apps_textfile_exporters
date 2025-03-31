@@ -61,7 +61,7 @@
 - name: "Add custom lines in script"
   ansible.builtin.blockinfile:
     path: "{{ item.name }}"
-    marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    marker: "{{ item.marker | default(['### ANSIBLE BLOCK']) }}"
     insertafter: "{{ item.after }}"
     block: |
       {{ item.content }}
