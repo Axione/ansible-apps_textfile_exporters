@@ -41,10 +41,10 @@
   ansible.builtin.package:
     name: "{{ __textfile_exporters_requirements }}"
     state: present
-  register: pkg_result
+  register: __pkg_result
   retries: 12
   delay: 10
-  until: pkg_result is success
+  until: __pkg_result is success
   when: textfile_exporters_install_requirements
 
 - name: "Create textfile scripts directory"
