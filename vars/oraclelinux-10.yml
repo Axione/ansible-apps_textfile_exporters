@@ -1,0 +1,4 @@
+---
+__textfile_exporters_requirements:
+  - cronie
+  - moreutils

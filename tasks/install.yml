@@ -10,13 +10,13 @@
   tags:
     - deploy
 
-- name: "ORACLELINUX9 | Enable codeready-builder repository"
+- name: "ORACLELINUX9+ | Enable codeready-builder repository"
   ansible.builtin.dnf:
     name: perl-IPC-Run
-    enablerepo: ol9_codeready_builder
+    enablerepo: "ol{{ansible_distribution_major_version }}_codeready_builder"
     state: present
   when:
-    - ansible_distribution == "OracleLinux" and ansible_distribution_major_version == "9"
+    - ansible_distribution in ['OracleLinux'] and (ansible_distribution_major_version | int) >= 9
     - textfile_exporters_install_requirements
   tags:
     - deploy
@@ -57,6 +57,12 @@
   tags:
     - deploy
 
+- name: "ORACLELINUX10 | Install prometheus_client system-wide"
+  ansible.builtin.pip:
+    name: prometheus_client
+    extra_args: "--root-user-action=ignore"
+  when: ansible_os_family == 'RedHat' and (ansible_distribution_major_version | int) == 10
+
 - name: "Create textfile scripts directory"
   ansible.builtin.file:
     path: "{{ textfile_exporters_install }}"
@@ -81,6 +87,8 @@
       {{ item.content }}
   loop: "{{ textfile_exporters_content | default([]) }}"
   when: textfile_exporters_content is defined and textfile_exporters_content | length > 0
+  tags:
+    - deploy
 
 - name: "Install cron jobs"
   ansible.builtin.cron:
