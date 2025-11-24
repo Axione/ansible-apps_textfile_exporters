@@ -2,6 +2,9 @@
 - name: "Set temp dir name"
   ansible.builtin.set_fact:
     _textfile_exporters_temp_dir: "{{ item.split('/')[-1] }}"
+  tags:
+    - deploy
+    - scripts
 
 - name: "Check for temp dir"
   ansible.builtin.stat:
@@ -9,6 +12,9 @@
   changed_when: false
   delegate_to: localhost
   register: exporters_tempdir
+  tags:
+    - deploy
+    - scripts
 
 - name: "Download textfile exporter scripts localy"
   ansible.builtin.git:
@@ -20,6 +26,9 @@
   until: git_result is success
   delegate_to: localhost
   when: not exporters_tempdir.stat.exists
+  tags:
+    - deploy
+    - scripts
 
 - name: "Copy local scripts remotely"
   ansible.builtin.copy:
@@ -31,3 +40,6 @@
   loop_control:
     loop_var: copy
   when: item is not none
+  tags:
+    - deploy
+    - scripts
