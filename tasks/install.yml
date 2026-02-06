@@ -5,7 +5,7 @@
     enablerepo: crb
     state: present
   when:
-    - ansible_distribution == "Rocky" and ansible_distribution_major_version >= "8"
+    - ansible_facts.distribution == "Rocky" and ansible_facts.distribution_major_version >= "8"
     - textfile_exporters_install_requirements
   tags:
     - deploy
@@ -13,10 +13,10 @@
 - name: "ORACLELINUX9+ | Enable codeready-builder repository"
   ansible.builtin.dnf:
     name: perl-IPC-Run
-    enablerepo: "ol{{ansible_distribution_major_version }}_codeready_builder"
+    enablerepo: "ol{{ansible_facts.distribution_major_version }}_codeready_builder"
     state: present
   when:
-    - ansible_distribution in ['OracleLinux'] and (ansible_distribution_major_version | int) >= 9
+    - ansible_facts.distribution in ['OracleLinux'] and (ansible_facts.distribution_major_version | int) >= 9
     - textfile_exporters_install_requirements
   tags:
     - deploy
@@ -26,7 +26,7 @@
     state: present
     key: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8"
   when:
-    - ansible_distribution == "OracleLinux" and ansible_distribution_major_version == "8"
+    - ansible_facts.distribution == "OracleLinux" and ansible_facts.distribution_major_version == "8"
     - textfile_exporters_install_requirements
   tags:
     - deploy
@@ -40,7 +40,7 @@
     state: present
     enablerepo: "ol8_codeready_builder,ol8_developer_EPEL"
   when:
-    - ansible_distribution == "OracleLinux" and ansible_distribution_major_version == "8"
+    - ansible_facts.distribution == "OracleLinux" and ansible_facts.distribution_major_version == "8"
     - textfile_exporters_install_requirements
   tags:
     - deploy
@@ -61,7 +61,7 @@
   ansible.builtin.pip:
     name: prometheus_client
     extra_args: "--root-user-action=ignore"
-  when: ansible_os_family == 'RedHat' and (ansible_distribution_major_version | int) == 10
+  when: ansible_facts.os_family == 'RedHat' and (ansible_facts.distribution_major_version | int) == 10
 
 - name: "Create textfile scripts directory"
   ansible.builtin.file:
