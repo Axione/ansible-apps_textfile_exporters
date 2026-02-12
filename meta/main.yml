@@ -27,6 +27,9 @@ galaxy_info:
         - "8"
         - "9"
         - "10"
+    - name: "RedHat"
+      versions:
+        - "9"
 
   galaxy_tags:
     - metrics

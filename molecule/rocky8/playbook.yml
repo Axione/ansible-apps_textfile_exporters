@@ -7,7 +7,7 @@
   vars:
     textfile_exporter_cron:
       - name: "Check if sssd is properly working every 5min"
-        job: /opt/prometheus_textfile_exporters/sssd_check.sh | sponge /var/lib/node_exporter/sssd_check.prom
+        job: umask 0022; /opt/prometheus_textfile_exporters/sssd_check.sh | sponge /var/lib/node_exporter/sssd_check.prom
         minute: "*/5"
         user: root
 

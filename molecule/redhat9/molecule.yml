@@ -6,7 +6,7 @@ driver:
   name: docker
 
 scenario:
-  name: debian10
+  name: redhat9
   test_sequence:
     - dependency
     - cleanup
@@ -21,8 +21,8 @@ scenario:
     - destroy
 
 platforms:
-  - name: apps-textfile-exporters-debian10
-    image: lotusnoir/ansible_molecule_test_images:debian10
+  - name: apps-textfile-exporters-redhat9
+    image: lotusnoir/ansible_molecule_test_images:redhat9
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
     pre_build_image: true

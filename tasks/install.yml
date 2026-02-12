@@ -1,46 +1,39 @@
 ---
-- name: "ROCKY | Enable crb repository"
+- name: "ROCKY | Enable codeready-builder repository"
   ansible.builtin.dnf:
     name: perl-IPC-Run
     enablerepo: crb
     state: present
   when:
-    - ansible_facts.distribution == "Rocky" and ansible_facts.distribution_major_version >= "8"
+    - ansible_facts.distribution == "Rocky"
     - textfile_exporters_install_requirements
   tags:
     - deploy
 
-- name: "ORACLELINUX9+ | Enable codeready-builder repository"
+- name: "REDHAT | Enable codeready-builder repository"
+  ansible.builtin.copy:
+    dest: /etc/yum.repos.d/crb.repo
+    content: |
+      [centos-crb]
+      name=CentOS {{ansible_facts.distribution_major_version }} CRB - {{ ansible_facts.architecture }}
+      baseurl=https://mirror.stream.centos.org/{{ansible_facts.distribution_major_version }}-stream/CRB/{{ ansible_facts.architecture }}/os/
+      enabled=1
+      gpgcheck=1
+      gpgkey=https://www.centos.org/keys/RPM-GPG-KEY-CentOS-Official-SHA256
+    mode: '0644'
+  when:
+    - ansible_facts.distribution == "RedHat"
+    - textfile_exporters_install_requirements
+  tags:
+    - deploy
+
+- name: "ORACLELINUX | Enable codeready-builder repository"
   ansible.builtin.dnf:
     name: perl-IPC-Run
     enablerepo: "ol{{ansible_facts.distribution_major_version }}_codeready_builder"
     state: present
   when:
-    - ansible_facts.distribution in ['OracleLinux'] and (ansible_facts.distribution_major_version | int) >= 9
-    - textfile_exporters_install_requirements
-  tags:
-    - deploy
-
-- name: "ORACLELINUX8 | Enable epel gpg key"
-  ansible.builtin.rpm_key:
-    state: present
-    key: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8"
-  when:
-    - ansible_facts.distribution == "OracleLinux" and ansible_facts.distribution_major_version == "8"
-    - textfile_exporters_install_requirements
-  tags:
-    - deploy
-
-- name: "ORACLELINUX8 | Enable codeready-builder repository"
-  ansible.builtin.dnf:
-    name:
-      - https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-      - perl-IPC-Run
-      - moreutils
-    state: present
-    enablerepo: "ol8_codeready_builder,ol8_developer_EPEL"
-  when:
-    - ansible_facts.distribution == "OracleLinux" and ansible_facts.distribution_major_version == "8"
+    - ansible_facts.distribution in ['OracleLinux']
     - textfile_exporters_install_requirements
   tags:
     - deploy
@@ -56,12 +49,6 @@
   when: textfile_exporters_install_requirements
   tags:
     - deploy
-
-- name: "ORACLELINUX10 | Install prometheus_client system-wide"
-  ansible.builtin.pip:
-    name: prometheus_client
-    extra_args: "--root-user-action=ignore"
-  when: ansible_facts.os_family == 'RedHat' and (ansible_facts.distribution_major_version | int) == 10
 
 - name: "Create textfile scripts directory"
   ansible.builtin.file:
